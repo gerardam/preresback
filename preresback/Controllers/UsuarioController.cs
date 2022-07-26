@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Mvc;
 using preresback.Domain.IServices;
 using preresback.Domain.Models;
+using preresback.Utils;
 using System;
 using System.Threading.Tasks;
 
@@ -27,6 +28,7 @@ namespace preresback.Controllers
                 {
                     return BadRequest(new { message = "El usuario " + usuario.NombreUsuario + " ya existe!" });
                 }
+                usuario.Password = Encriptar.EncriptarPassword(usuario.Password);
                 await _usuarioService.SaveUser(usuario);
 
                 return Ok(new { message = "Usuario registrado con exito!" });
