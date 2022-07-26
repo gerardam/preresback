@@ -2,10 +2,16 @@ using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.HttpsPolicy;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
+using preresback.Domain.IRepositories;
+using preresback.Domain.IServices;
+using preresback.Persistence.Context;
+using preresback.Persistence.Repositories;
+using preresback.Services;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -26,6 +32,19 @@ namespace preresback
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddControllers();
+
+            //Obtener la cadena de conexion de la appsettings//Conexion a SQL Server
+            services.AddDbContext<AplicationDbContext>(options =>
+                options.UseSqlServer(Configuration.GetConnectionString("DefaultConnection")));
+            //Obtener la cadena de conexion de la appsettings//Conexion a SQL Server
+            //services.AddDbContext<AplicationDbContext>(options =>
+            //    options.UseMySql(Configuration.GetConnectionString("DefaultConnection")));
+
+            // Service
+            services.AddScoped<IUsuarioService, UsuarioService>();
+
+            // Repository
+            services.AddScoped<IUsuarioRepository, UsuarioRepository>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
