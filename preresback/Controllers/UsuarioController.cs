@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Mvc;
 using preresback.Domain.IServices;
 using preresback.Domain.Models;
+using preresback.DTO;
 using preresback.Utils;
 using System;
 using System.Threading.Tasks;
@@ -36,6 +37,35 @@ namespace preresback.Controllers
             catch (Exception ex)
             {
 
+                return BadRequest(ex.Message);
+            }
+        }
+
+        //api/Usuario/CambiarPassword
+        [Route("CambiarPassword")]
+        [HttpPut]
+        public async Task<IActionResult> CambiarPassword([FromBody] CambiarPasswordDTO cambiarPassword)
+        {
+            try
+            {
+                int idUsuario = 3;
+                string passwordEncriptado = Encriptar.EncriptarPassword(cambiarPassword.passwordAnterior);
+                var usuario = await _usuarioService.ValidatePassword(idUsuario, passwordEncriptado);
+                if (usuario == null)
+                {
+                    return BadRequest(new { message = "La contraseña es incrorrecta" });
+                }
+                else
+                {
+                    usuario.Password = Encriptar.EncriptarPassword(cambiarPassword.nuevaPassword);
+                    await _usuarioService.UpdatePassword(usuario);
+                    return Ok(new { message = "La contraseña fue actualizada con exito!" });
+
+                }
+
+            }
+            catch (Exception ex)
+            {
                 return BadRequest(ex.Message);
             }
         }
