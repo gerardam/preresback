@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Configuration;
 using preresback.Domain.IServices;
 using preresback.Domain.Models;
 using preresback.Utils;
@@ -13,9 +14,12 @@ namespace preresback.Controllers
     public class LoginController : ControllerBase
     {
         private readonly ILoginService _loginService;
-        public LoginController(ILoginService loginService)
+        private readonly IConfiguration _config;
+
+        public LoginController(ILoginService loginService, IConfiguration config)
         {
             _loginService = loginService;
+            _config = config;
         }
 
         [HttpPost]
@@ -30,7 +34,9 @@ namespace preresback.Controllers
                     return BadRequest(new { message = "Usuario o contraseña invalidos" });
                 }
 
-                return Ok(new { usuario = user.NombreUsuario });
+                string tokenString = JwtConfigurator.GetToken(user, _config);
+
+                return Ok(new { toket = tokenString });
             }
             catch (Exception ex)
             {

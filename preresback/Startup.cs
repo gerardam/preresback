@@ -7,6 +7,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
+using Microsoft.IdentityModel.Logging;
 using preresback.Domain.IRepositories;
 using preresback.Domain.IServices;
 using preresback.Persistence.Context;
@@ -47,6 +48,12 @@ namespace preresback
             // Repository
             services.AddScoped<IUsuarioRepository, UsuarioRepository>();
             services.AddScoped<ILoginRepository, LoginRepository>();
+
+            //Permiso de conexion de servicios externos (conexion desde front)*
+            services.AddCors(options => options.AddPolicy("TodoConexioAApp",
+                builder => builder.AllowAnyOrigin()
+                                    .AllowAnyHeader()
+                                    .AllowAnyMethod()));
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -55,7 +62,10 @@ namespace preresback
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
+                IdentityModelEventSource.ShowPII = true;
             }
+
+            app.UseCors("TodoConexioAApp");//*Conexion de servicios externos
 
             app.UseHttpsRedirection();
 
