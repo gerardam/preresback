@@ -36,7 +36,7 @@ namespace preresback.Controllers
 
                 string tokenString = JwtConfigurator.GetToken(user, _config);
 
-                return Ok(new { toket = tokenString });
+                return Ok(new { token = tokenString });
             }
             catch (Exception ex)
             {
