@@ -2,6 +2,8 @@
 using Microsoft.IdentityModel.Tokens;
 using preresback.Domain.Models;
 using System;
+using System.Collections;
+using System.Collections.Generic;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
@@ -34,6 +36,22 @@ namespace preresback.Utils
                 );
 
             return new JwtSecurityTokenHandler().WriteToken(token);
+        }
+
+        public static int GetTokenIdUsuario(ClaimsIdentity identity)
+        {
+            if (identity != null)
+            {
+                IEnumerable<Claim> claims = identity.Claims;
+                foreach (var claim in claims)
+                {
+                    if (claim.Type == "idUsuario")
+                    {
+                        return int.Parse(claim.Value);
+                    }
+                }
+            }
+            return 0;
         }
     }
 }

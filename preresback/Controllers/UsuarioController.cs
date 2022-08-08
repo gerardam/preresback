@@ -1,10 +1,13 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using preresback.Domain.IServices;
 using preresback.Domain.Models;
 using preresback.DTO;
 using preresback.Utils;
 using System;
+using System.Security.Claims;
 using System.Threading.Tasks;
 
 namespace preresback.Controllers
@@ -43,12 +46,14 @@ namespace preresback.Controllers
 
         //api/Usuario/CambiarPassword
         [Route("CambiarPassword")]
+        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
         [HttpPut]
         public async Task<IActionResult> CambiarPassword([FromBody] CambiarPasswordDTO cambiarPassword)
         {
             try
             {
-                int idUsuario = 3;
+                var identity = HttpContext.User.Identity as ClaimsIdentity;
+                int idUsuario = JwtConfigurator.GetTokenIdUsuario(identity);
                 string passwordEncriptado = Encriptar.EncriptarPassword(cambiarPassword.passwordAnterior);
                 var usuario = await _usuarioService.ValidatePassword(idUsuario, passwordEncriptado);
                 if (usuario == null)
